@@ -671,3 +671,4 @@ calcRookMoves(pieces[31]);
 // }
 const learningGit = true;
 console.log('change to be commited');
+console.log('another change');
