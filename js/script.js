@@ -673,4 +673,6 @@ const learningGit = true;
 console.log('change to be commited');
 console.log('another change');
 
-function newCalcMoves() {}
+function newCalcMoves() {
+  console.log('move wherever you want to');
+}
