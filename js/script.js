@@ -559,6 +559,7 @@ const testForPossibleMove = function (
   pieceMoves,
   flag
 ) {
+  //FIXME gotta implement this in a better way. checking if the piece at possible move square is alive
   const pieceAtSquare = getPieceAtSquare(possibleMove);
   if (!pieceAtSquare) {
     pieceMoves.push([possibleMove[0], possibleMove[1], 'movement']);
@@ -572,24 +573,27 @@ const testForPossibleMove = function (
 
 const calcKnightMoves = function (piece) {
   const moves = [];
+  const color = piece.color;
   let y = piece.y;
   let x = piece.x;
-  for (let m = 0; m < KnightPossibleMoves.length; m++) {
+  let moveY;
+  let moveX;
+  for (let m = 0; m < 8; m++) {
     if (
       y + knightPossibleMoves[m][0] >= 0 &&
       y + knightPossibleMoves[m][0] < ROWS
-    )
+    ) {
       if (
         x + knightPossibleMoves[m][1] >= 0 &&
-        x + knightPossibleMoves[m][0] < COLUMNS
-      )
-        testForPossibleMove([
-          y + knightPossibleMoves[m][0],
-          x + knightPossibleMoves[m][1],
-          moves,
-          null,
-        ]);
+        x + knightPossibleMoves[m][1] < COLUMNS
+      ) {
+        moveY = y + knightPossibleMoves[m][0];
+        moveX = x + knightPossibleMoves[m][1];
+        testForPossibleMove([moveY, moveX], color, moves, null);
+      }
+    }
   }
+  return moves;
 };
 
 const calcBishopMoves = function (piece) {
@@ -660,6 +664,10 @@ renderAllPieces();
 pieces[24].y = 4; //DONE //changing these properties kills half of the white pieces because when i look for the drawInfo of the pieces, i only look for each piece once by their order of appearance on the matrix. perhaps a way to solve this would be to look for the pieces drawInfo by some sort of id or by directly referencing them on the array
 pieces[24].x = 3;
 pieces[24].moves = calcRookMoves(pieces[24]);
+pieces[25].x = 5;
+pieces[25].y = 0;
+pieces[25].moves = calcKnightMoves(pieces[25]);
+
 pieces[13].alive = false;
 pieces[0].alive = false;
 pieces[5].alive = false;
