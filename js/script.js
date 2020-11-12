@@ -677,3 +677,5 @@ function newCalcMoves() {
   console.log('move wherever you want to');
   console.log('and do whatever you want to do');
 }
+
+function nuevaFuncion() {}
