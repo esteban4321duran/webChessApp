@@ -339,7 +339,7 @@ const cleanup = function (cleanupInfo) {
 //   }
 // };
 
-//EVENT_LISTENER
+//EVENT_HANDLER
 const boardSquareClicked = function (e) {
   // this refers to the board-square element that fired the 'click event'
   //a two element array with the coordinates of the clicked board squares
@@ -423,20 +423,23 @@ const renderAvailableMoves = function (moves) {
 };
 
 const getAvailableMovesDrawInfo = function (moves, cleanupInfo) {
-  console.log(moves);
-  let m = 0;
   const drawInfo = [];
+  let moveAtPos = false;
+  let moveType = '';
   for (let y = 0; y < ROWS; y++) {
     for (let x = 0; x < COLUMNS; x++) {
-      if (m < moves.length && x === moves[m][1] && y === moves[m][0]) {
-        drawInfo.push([
-          x,
-          y,
-          '', //TODO I shold use this third draw info component to specify wether this is an agressive move or not
-        ]);
-        m++;
+      moveAtPos = false;
+      for (let m = 0; m < moves.length; m++) {
+        if (x === moves[m][1] && y === moves[m][0]) {
+          moveAtPos = true;
+          moveType = moves[m][2];
+          break;
+        }
+      }
+      if (moveAtPos) {
+        drawInfo.push([y, x, moveType]);
       } else {
-        cleanupInfo.push([x, y]);
+        cleanupInfo.push([y, x]);
       }
     }
   }
@@ -444,18 +447,23 @@ const getAvailableMovesDrawInfo = function (moves, cleanupInfo) {
 };
 const drawBackground = function (drawInfo) {
   //TODO ok so i need to find a proper way to remember the original background-image for each boardSquare
-
   let squareBoardBackground;
+  let squareBoardBackgroundType;
   for (let i = 0; i < drawInfo.length; i++) {
-    squareBoardBackground = board[drawInfo[i][1]][drawInfo[i][0]];
-
+    squareBoardBackground = board[drawInfo[i][0]][drawInfo[i][1]];
+    squareBoardBackgroundType = drawInfo[i][2];
     if (squareBoardBackground.classList.contains('light'))
       squareBoardBackground.classList.replace('light', 'was-light');
     else if (squareBoardBackground.classList.contains('dark'))
       squareBoardBackground.classList.replace('dark', 'was-dark');
 
-    if (!squareBoardBackground.classList.contains('available-move'))
-      squareBoardBackground.classList.toggle('available-move');
+    if (squareBoardBackgroundType === 'movement') {
+      if (!squareBoardBackground.classList.contains('available-move'))
+        squareBoardBackground.classList.toggle('available-move');
+    } else {
+      if (!squareBoardBackground.classList.contains('aggressive-move'))
+        squareBoardBackground.classList.toggle('aggressive-move');
+    }
   }
 };
 
@@ -464,7 +472,7 @@ const drawBackground = function (drawInfo) {
 const cleanupBackground = function (cleanupInfo) {
   let squareBoardBackground;
   for (let i = 0; i < cleanupInfo.length; i++) {
-    squareBoardBackground = board[cleanupInfo[i][1]][cleanupInfo[i][0]];
+    squareBoardBackground = board[cleanupInfo[i][0]][cleanupInfo[i][1]];
     squareBoardBackground.src = '';
 
     if (squareBoardBackground.classList.contains('was-light'))
@@ -474,6 +482,8 @@ const cleanupBackground = function (cleanupInfo) {
 
     if (squareBoardBackground.classList.contains('available-move'))
       squareBoardBackground.classList.toggle('available-move');
+    if (squareBoardBackground.classList.contains('aggressive-move'))
+      squareBoardBackground.classList.toggle('aggressive-move');
   }
 };
 
@@ -505,40 +515,41 @@ const calcRookMoves = function (piece) {
 const rookMovesNorth = function (piece, moves) {
   const x = piece.x;
   const color = piece.color;
-  let changeDirection = false;
+  let changeDirection = [false];
   for (let y = piece.y - 1; y >= 0; y--) {
     testForPossibleMove([y, x], color, moves, changeDirection);
-    if (changeDirection) break;
+    if (changeDirection[0]) break;
   }
 };
 
 const rookMovesSouth = function (piece, moves) {
   const x = piece.x;
   const color = piece.color;
-  let changeDirection = false;
+  let changeDirection = [false];
   for (let y = piece.y + 1; y < ROWS; y++) {
     testForPossibleMove([y, x], color, moves, changeDirection);
-    if (changeDirection) break;
+    if (changeDirection[0]) break;
   }
 };
 
 const rookMovesEast = function (piece, moves) {
   const y = piece.y;
   const color = piece.color;
-  let changeDirection = false;
+  let changeDirection = [false];
   for (let x = piece.x - 1; x >= 0; x--) {
     testForPossibleMove([y, x], color, moves, changeDirection);
-    if (changeDirection) break;
+    if (changeDirection[0]) break;
   }
 };
 
 const rookMovesWest = function (piece, moves) {
   const y = piece.y;
   const color = piece.color;
-  let changeDirection = false;
+  let changeDirection = [false];
   for (let x = piece.x + 1; x < COLUMNS; x++) {
     testForPossibleMove([y, x], color, moves, changeDirection);
-    if (changeDirection) break;
+
+    if (changeDirection[0]) break;
   }
 };
 
@@ -552,10 +563,10 @@ const testForPossibleMove = function (
   if (!pieceAtSquare) {
     pieceMoves.push([possibleMove[0], possibleMove[1], 'movement']);
   } else if (friendlyColor === pieceAtSquare.color) {
-    if (flag) flag = true;
+    if (flag !== null) flag[0] = true;
   } else if (friendlyColor !== pieceAtSquare.color) {
     pieceMoves.push([possibleMove[0], possibleMove[1], 'aggressive']);
-    if (flag) flag = true;
+    if (flag !== null) flag[0] = true;
   }
 };
 
@@ -647,7 +658,11 @@ subscribeEventListeners();
 renderAllPieces();
 // pieces[24].x = 4;
 pieces[24].y = 4; //DONE //changing these properties kills half of the white pieces because when i look for the drawInfo of the pieces, i only look for each piece once by their order of appearance on the matrix. perhaps a way to solve this would be to look for the pieces drawInfo by some sort of id or by directly referencing them on the array
-pieces[13].y = 3;
+pieces[24].x = 3;
+pieces[24].moves = calcRookMoves(pieces[24]);
+pieces[13].alive = false;
+pieces[0].alive = false;
+pieces[5].alive = false;
 renderAllPieces();
 calcRookMoves(pieces[31]);
 

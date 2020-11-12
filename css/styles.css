@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 main {
   position: absolute;
   top: 50%;
@@ -36,11 +40,21 @@ img {
 }
 
 .available-move {
-  background-color: #8bec2a;
+  background: rgb(139, 236, 42);
+  background: radial-gradient(
+    circle,
+    rgba(139, 236, 42, 1) 0%,
+    rgba(92, 156, 29, 1) 83%
+  );
 }
 
-.aggresive-move {
-  background-color: #d11009;
+.aggressive-move {
+  background: rgb(209, 16, 9);
+  background: radial-gradient(
+    circle,
+    rgba(209, 16, 9, 1) 0%,
+    rgba(149, 12, 7, 1) 83%
+  );
 }
 
 .none {
