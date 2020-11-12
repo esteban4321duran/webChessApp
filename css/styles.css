@@ -4,8 +4,8 @@ main {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #dddddd;
-  height: 800px;
-  width: 800px;
+  height: 500px;
+  width: 500px;
 }
 
 img {
@@ -23,8 +23,8 @@ img {
 
 .board-square {
   float: left;
-  height: 100px;
-  width: 100px;
+  height: 62.5px;
+  width: 62.5px;
 }
 
 .light {

@@ -344,7 +344,6 @@ const boardSquareClicked = function (e) {
   // this refers to the board-square element that fired the 'click event'
   //a two element array with the coordinates of the clicked board squares
   const clickedSquare = findCoordinates(this);
-  console.log(`clicked square: ${clickedSquare}`);
 
   //TODO
   gameLogic(clickedSquare);
@@ -364,7 +363,6 @@ const gameLogic = function (clickedSquare) {
 
 const testForPiece = function (clickedSquare) {
   const clickedPiece = getPieceAtSquare(clickedSquare);
-  console.log(clickedPiece);
   if (clickedPiece) testForActivePlayer(clickedPiece);
   else testForSelectedPiece();
 };
@@ -479,122 +477,141 @@ const cleanupBackground = function (cleanupInfo) {
   }
 };
 
-//FIX Not implemented correctly yet
 const calcRookMoves = function (piece) {
-  const color = piece.color;
+  // north:0,
+  // east:1,
+  // south:2,
+  // west:3
   const moves = [];
-  let y;
-  let x;
-  let changeDirection = false;
-  let pieceAtDestination;
-  //Directions
-  // 0: NORTH
-  // 1: EAST
-  // 2: SOUTH
-  // 3: WEST
   for (let direction = 0; direction < 4; direction++) {
     switch (direction) {
       case 0:
-        changeDirection = false;
-        y = piece.y;
-        x = piece.x;
-        y--;
-        pieceAtDestination = getPieceAtSquare([y, x]);
-        while (y > 0 && !changeDirection) {
-          testForBlockingPiece([y, x], color, moves, changeDirection);
-          y--;
-        }
+        rookMovesNorth(piece, moves);
         break;
       case 1:
-        changeDirection = false;
-        y = piece.y;
-        x = piece.x;
-        x++;
-        pieceAtDestination = getPieceAtSquare([y, x]);
-        while (x < COLUMNS && !changeDirection) {
-          testForBlockingPiece([y, x], color, moves, changeDirection);
-          x++;
-        }
+        rookMovesEast(piece, moves);
         break;
       case 2:
-        changeDirection = false;
-        y = piece.y;
-        x = piece.x;
-        y++;
-        pieceAtDestination = getPieceAtSquare([y, x]);
-        while (y < ROWS && !changeDirection) {
-          testForBlockingPiece([y, x], color, moves, changeDirection);
-          y++;
-        }
+        rookMovesSouth(piece, moves);
         break;
       case 3:
-        changeDirection = false;
-        y = piece.y;
-        x = piece.x;
-        x--;
-        pieceAtDestination = getPieceAtSquare([y, x]);
-        while (x > 0 && !changeDirection) {
-          testForBlockingPiece([y, x], color, moves, changeDirection);
-          x--;
-        }
+        rookMovesWest(piece, moves);
         break;
     }
   }
-  piece.moves = moves;
+  return moves;
 };
 
-const testForBlockingPiece = function (
-  //DONEnot detecting enemy piece lovations as valid moves
-  destination,
-  friendlyColor,
-  moves,
-  changeDirection
-) {
-  const pieceAtDestination = getPieceAtSquare(destination);
-  if (pieceAtDestination === null) moves.unshift(destination);
-  else if (isFriendly(friendlyColor, pieceAtDestination))
-    changeDirection = true;
-  else if (!isFriendly(friendlyColor, pieceAtDestination)) {
-    moves.unshift(destination);
-    changeDirection;
-  } else {
-    moves.unshift(destination);
-  }
-};
-
-const calcKnightMoves = function () {
-  //TODO
-  let y = piece.y;
+const rookMovesNorth = function (piece, moves) {
   const x = piece.x;
-  for (let move = 0; move < 8; move++) {
-    switch (i) {
-      case 0:
-        break;
-      case 1:
-        break;
-      case 2:
-        break;
-      case 3:
-        break;
-      case 4:
-        break;
-      case 5:
-        break;
-      case 6:
-        break;
-      case 7:
-        break;
-    }
+  const color = piece.color;
+  let changeDirection = false;
+  for (let y = piece.y - 1; y >= 0; y--) {
+    testForPossibleMove([y, x], color, moves, changeDirection);
+    if (changeDirection) break;
   }
 };
 
-const calcBishopMoves = function () {};
+const rookMovesSouth = function (piece, moves) {
+  const x = piece.x;
+  const color = piece.color;
+  let changeDirection = false;
+  for (let y = piece.y + 1; y < ROWS; y++) {
+    testForPossibleMove([y, x], color, moves, changeDirection);
+    if (changeDirection) break;
+  }
+};
 
-const calcQueenMoves = function () {};
+const rookMovesEast = function (piece, moves) {
+  const y = piece.y;
+  const color = piece.color;
+  let changeDirection = false;
+  for (let x = piece.x - 1; x >= 0; x--) {
+    testForPossibleMove([y, x], color, moves, changeDirection);
+    if (changeDirection) break;
+  }
+};
 
-const calcKingMoves = function () {};
+const rookMovesWest = function (piece, moves) {
+  const y = piece.y;
+  const color = piece.color;
+  let changeDirection = false;
+  for (let x = piece.x + 1; x < COLUMNS; x++) {
+    testForPossibleMove([y, x], color, moves, changeDirection);
+    if (changeDirection) break;
+  }
+};
 
-const calcPawnMoves = function () {};
+const testForPossibleMove = function (
+  possibleMove,
+  friendlyColor,
+  pieceMoves,
+  flag
+) {
+  const pieceAtSquare = getPieceAtSquare(possibleMove);
+  if (!pieceAtSquare) {
+    pieceMoves.push([possibleMove[0], possibleMove[1], 'movement']);
+  } else if (friendlyColor === pieceAtSquare.color) {
+    if (flag) flag = true;
+  } else if (friendlyColor !== pieceAtSquare.color) {
+    pieceMoves.push([possibleMove[0], possibleMove[1], 'aggressive']);
+    if (flag) flag = true;
+  }
+};
+
+const calcKnightMoves = function (piece) {
+  const moves = [];
+  let y = piece.y;
+  let x = piece.x;
+  for (let m = 0; m < KnightPossibleMoves.length; m++) {
+    if (
+      y + knightPossibleMoves[m][0] >= 0 &&
+      y + knightPossibleMoves[m][0] < ROWS
+    )
+      if (
+        x + knightPossibleMoves[m][1] >= 0 &&
+        x + knightPossibleMoves[m][0] < COLUMNS
+      )
+        testForPossibleMove([
+          y + knightPossibleMoves[m][0],
+          x + knightPossibleMoves[m][1],
+          moves,
+          null,
+        ]);
+  }
+};
+
+const calcBishopMoves = function (piece) {
+  // directions
+  // northeast: 0;
+  // southeast: 1;
+  // southwest: 2;
+  // northeest: 3;
+  const moves = [];
+  for (let direction = 0; direction < 4; direction++) {
+    switch (direction) {
+      case 0:
+        bishopMovesNortheast(piece, moves);
+        break;
+      case 1:
+        bishopMovesSoutheast(piece, moves);
+        break;
+      case 2:
+        bishopMovesSouthwest(piece, moves);
+        break;
+      case 3:
+        bishopMovesNorthwest(piece, moves);
+        break;
+    }
+  }
+  return moves;
+};
+
+const bishopMovesNortheast = function (piece, moves) {};
+
+const calcQueenMoves = function (piece) {};
+
+const calcPawnMoves = function (piece) {};
 
 const isFriendly = function (friendlyColor, pieceAtDestination) {
   if (!pieceAtDestination) return null;
@@ -612,7 +629,16 @@ const COLUMNS = 8;
 const startingAlivePieces = 32;
 const board = initializeBoard();
 const pieces = initializePieces();
-
+const knightPossibleMoves = [
+  [-2, -1],
+  [-2, 1],
+  [-1, 2],
+  [1, 2],
+  [2, -1],
+  [2, 1],
+  [-1, -2],
+  [1, -2],
+];
 let alivePieces = 32;
 let activePlayer = 'white';
 
@@ -669,13 +695,3 @@ calcRookMoves(pieces[31]);
 //     y++;
 //   }
 // }
-const learningGit = true;
-console.log('change to be commited');
-console.log('another change');
-
-function newCalcMoves() {
-  console.log('move wherever you want to');
-  console.log('and do whatever you want to do');
-}
-
-function nuevaFuncion() {}
