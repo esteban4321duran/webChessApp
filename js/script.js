@@ -125,6 +125,7 @@ const buildBlackPieces = function (pieces) {
       alive: true,
       selected: false,
       moves: [],
+      firstMove: true,
       sprite: '../assets/pieces/b_pawn_svg_withShadow.svg',
     });
   }
@@ -140,6 +141,7 @@ const buildWhitePieces = function (pieces) {
       alive: true,
       selected: false,
       moves: [],
+      firstMove: true,
       sprite: '../assets/pieces/w_pawn_svg_withShadow.svg',
     });
   }
@@ -426,23 +428,23 @@ const calcRookMoves = function (piece) {
   for (let direction = 0; direction < 4; direction++) {
     switch (direction) {
       case 0:
-        rookMovesNorth(piece, moves);
+        movesNorth(piece, moves);
         break;
       case 1:
-        rookMovesEast(piece, moves);
+        movesEast(piece, moves);
         break;
       case 2:
-        rookMovesSouth(piece, moves);
+        movesSouth(piece, moves);
         break;
       case 3:
-        rookMovesWest(piece, moves);
+        movesWest(piece, moves);
         break;
     }
   }
   return moves;
 };
 
-const rookMovesNorth = function (piece, moves) {
+const movesNorth = function (piece, moves) {
   const x = piece.x;
   const color = piece.color;
   let changeDirection = [false];
@@ -452,7 +454,7 @@ const rookMovesNorth = function (piece, moves) {
   }
 };
 
-const rookMovesSouth = function (piece, moves) {
+const movesSouth = function (piece, moves) {
   const x = piece.x;
   const color = piece.color;
   let changeDirection = [false];
@@ -462,7 +464,7 @@ const rookMovesSouth = function (piece, moves) {
   }
 };
 
-const rookMovesEast = function (piece, moves) {
+const movesEast = function (piece, moves) {
   const y = piece.y;
   const color = piece.color;
   let changeDirection = [false];
@@ -472,7 +474,7 @@ const rookMovesEast = function (piece, moves) {
   }
 };
 
-const rookMovesWest = function (piece, moves) {
+const movesWest = function (piece, moves) {
   const y = piece.y;
   const color = piece.color;
   let changeDirection = [false];
@@ -536,33 +538,233 @@ const calcBishopMoves = function (piece) {
   for (let direction = 0; direction < 4; direction++) {
     switch (direction) {
       case 0:
-        bishopMovesNortheast(piece, moves);
+        movesNortheast(piece, moves);
         break;
       case 1:
-        bishopMovesSoutheast(piece, moves);
+        movesSoutheast(piece, moves);
         break;
       case 2:
-        bishopMovesSouthwest(piece, moves);
+        movesSouthwest(piece, moves);
         break;
       case 3:
-        bishopMovesNorthwest(piece, moves);
+        movesNorthwest(piece, moves);
         break;
     }
   }
   return moves;
 };
 
-const bishopMovesNortheast = function (piece, moves) {};
-
-const calcQueenMoves = function (piece) {};
-
-const calcPawnMoves = function (piece) {};
-
-const isFriendly = function (friendlyColor, pieceAtDestination) {
-  if (!pieceAtDestination) return null;
-  return friendlyColor === pieceAtDestination.color ? true : false;
+const movesNortheast = function (piece, moves) {
+  let x = piece.x;
+  let y = piece.y;
+  const color = piece.color;
+  let changeDirection = [false];
+  while (!changeDirection[0]) {
+    y--;
+    x++;
+    if (y > 0 && x < COLUMNS)
+      testForPossibleMove([y, x], color, moves, changeDirection);
+    else changeDirection[0] = true;
+  }
 };
 
+const movesSoutheast = function (piece, moves) {
+  let x = piece.x;
+  let y = piece.y;
+  const color = piece.color;
+  let changeDirection = [false];
+  while (!changeDirection[0]) {
+    y++;
+    x++;
+    if (y < ROWS && x < COLUMNS)
+      testForPossibleMove([y, x], color, moves, changeDirection);
+    else changeDirection[0] = true;
+  }
+};
+const movesSouthwest = function (piece, moves) {
+  let x = piece.x;
+  let y = piece.y;
+  const color = piece.color;
+  let changeDirection = [false];
+  while (!changeDirection[0]) {
+    y++;
+    x--;
+    if (y < ROWS && x > 0)
+      testForPossibleMove([y, x], color, moves, changeDirection);
+    else changeDirection[0] = true;
+  }
+};
+const movesNorthwest = function (piece, moves) {
+  let x = piece.x;
+  let y = piece.y;
+  const color = piece.color;
+  let changeDirection = [false];
+  while (!changeDirection[0]) {
+    y--;
+    x--;
+    if (y > 0 && x > 0)
+      testForPossibleMove([y, x], color, moves, changeDirection);
+    else changeDirection[0] = true;
+  }
+};
+
+const calcQueenMoves = function (piece) {
+  const moves = [];
+  for (let direction = 0; direction < 8; direction++) {
+    switch (direction) {
+      case 0:
+        movesNorth(piece, moves);
+        break;
+      case 1:
+        movesEast(piece, moves);
+        break;
+      case 2:
+        movesSouth(piece, moves);
+        break;
+      case 3:
+        movesWest(piece, moves);
+        break;
+      case 4:
+        movesNortheast(piece, moves);
+        break;
+      case 5:
+        movesSoutheast(piece, moves);
+        break;
+      case 6:
+        movesSouthwest(piece, moves);
+        break;
+      case 7:
+        movesNorthwest(piece, moves);
+        break;
+    }
+  }
+  return moves;
+};
+
+const calcPawnMoves = function (piece) {
+  //TODO
+  const color = piece.color;
+  const moves = [];
+
+  if (color === 'white') movesWhitePawn(piece, moves);
+  else movesBlackPawn(piece, moves);
+  return moves;
+};
+
+const movesWhitePawn = function (piece, moves) {
+  const y = piece.y;
+  const x = piece.x;
+  let pieceAtSquare;
+  let calcForthMove = false;
+  for (let m = 0; m < 4; m++) {
+    switch (m) {
+      case 0:
+        pieceAtSquare = getPieceAtSquare([
+          y - pawnPossibleMoves[m][0],
+          x + pawnPossibleMoves[m][1],
+        ]);
+        if (!pieceAtSquare) {
+          moves.push([
+            y - pawnPossibleMoves[m][0],
+            x + pawnPossibleMoves[m][1],
+            'movement',
+          ]);
+          calcForthMove = true;
+        }
+        break;
+      case 1:
+      case 2:
+        testForAggressiveMove(
+          [y - pawnPossibleMoves[m][0], x + pawnPossibleMoves[m][1]],
+          'white',
+          moves,
+          null
+        );
+        break;
+      case 3:
+        if (calcForthMove && piece.firstMove) {
+          pieceAtSquare = getPieceAtSquare([
+            y - pawnPossibleMoves[m][0],
+            x + pawnPossibleMoves[m][1],
+          ]);
+          if (!pieceAtSquare) {
+            moves.push([
+              y - pawnPossibleMoves[m][0],
+              x + pawnPossibleMoves[m][1],
+              'movement',
+            ]);
+            piece.firstMove = !piece.firstMove;
+          }
+        }
+        break;
+    }
+  }
+};
+
+const movesBlackPawn = function (piece, moves) {
+  const y = piece.y;
+  const x = piece.x;
+  let pieceAtSquare;
+  let calcForthMove = false;
+  for (let m = 0; m < 4; m++) {
+    switch (m) {
+      case 0:
+        pieceAtSquare = getPieceAtSquare([
+          y + pawnPossibleMoves[m][0],
+          x + pawnPossibleMoves[m][1],
+        ]);
+        if (!pieceAtSquare) {
+          moves.push([
+            y + pawnPossibleMoves[m][0],
+            x + pawnPossibleMoves[m][1],
+            'movement',
+          ]);
+          calcForthMove = true;
+        }
+        break;
+      case 1:
+      case 2:
+        testForAggressiveMove(
+          [y + pawnPossibleMoves[m][0], x + pawnPossibleMoves[m][1]],
+          'black',
+          moves,
+          null
+        );
+        break;
+      case 3:
+        if (calcForthMove && piece.firstMove) {
+          pieceAtSquare = getPieceAtSquare([
+            y + pawnPossibleMoves[m][0],
+            x + pawnPossibleMoves[m][1],
+          ]);
+
+          if (!pieceAtSquare) {
+            moves.push([
+              y + pawnPossibleMoves[m][0],
+              x + pawnPossibleMoves[m][1],
+              'movement',
+            ]);
+            piece.firstMove = !piece.firstMove;
+          }
+        }
+        break;
+    }
+  }
+};
+
+const testForAggressiveMove = function (
+  possibleMove,
+  friendlyColor,
+  pieceMoves,
+  flag
+) {
+  const pieceAtSquare = getPieceAtSquare(possibleMove);
+  if (pieceAtSquare !== null)
+    if (friendlyColor !== pieceAtSquare.color) {
+      pieceMoves.push([possibleMove[0], possibleMove[1], 'aggressive']);
+      if (flag !== null) flag[0] = true;
+    }
+};
 const testForSelectedPiece = function () {
   testForAvailableMove();
 };
@@ -584,8 +786,26 @@ const knightPossibleMoves = [
   [-1, -2],
   [1, -2],
 ];
+const pawnPossibleMoves = [
+  [1, 0],
+  [1, 1],
+  [1, -1],
+  [2, 0],
+];
 let alivePieces = 32;
-let activePlayer = 'white';
+let activePlayer = 'black';
 
 subscribeEventListeners();
+renderAllPieces();
+pieces[31].y = 2;
+pieces[31].x = 4;
+pieces[30].y = 2;
+pieces[30].x = 5;
+pieces[29].y = 2;
+pieces[29].x = 6;
+pieces[15].moves = calcPawnMoves(pieces[15]);
+pieces[14].moves = calcPawnMoves(pieces[14]);
+pieces[13].moves = calcPawnMoves(pieces[13]);
+pieces[12].moves = calcPawnMoves(pieces[12]);
+pieces[11].moves = calcPawnMoves(pieces[11]);
 renderAllPieces();
