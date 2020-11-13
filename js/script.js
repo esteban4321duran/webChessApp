@@ -238,6 +238,18 @@ const subscribeEventListeners = function () {
       board[i][j].addEventListener('click', boardSquareClicked);
     }
   }
+  document
+    .getElementById('promoteToRook')
+    .addEventListener('click', promoteToRook);
+  document
+    .getElementById('promoteToKnight')
+    .addEventListener('click', promoteToKnight);
+  document
+    .getElementById('promoteToBishop')
+    .addEventListener('click', promoteToBishop);
+  document
+    .getElementById('promoteToQueen')
+    .addEventListener('click', promoteToQueen);
 };
 
 const renderAllPieces = function () {
@@ -499,19 +511,30 @@ const removePiece = function (piece) {
 };
 
 const testForPawnMove = function (piece) {
-  if (piece.type === 'pawn') testForPawnExchange(piece);
+  if (piece.type === 'pawn') testForPawnPromotion(piece);
 };
 
-const testForPawnExchange = function (piece) {
-  console.log(`was a pawn`);
-  if (piece.color === 'white' && piece.y === 0) exchangePawn(piece);
-  else if (piece.color === 'black' && piece.y === 7) exchangePawn(piece);
+const testForPawnPromotion = function (piece) {
+  if (piece.color === 'white' && piece.y === 0) promotePawn(piece);
+  else if (piece.color === 'black' && piece.y === 7) promotePawn(piece);
   //else just return
 };
 
-const exchangePawn = function (pawn) {
+const promotePawn = function (pawn) {
   //Make a modal-window visible so the active player can select a piece to exchange for his pawn
+  showPawnPromotionModalWindow();
 };
+
+const showPawnPromotionModalWindow = function () {
+  if (promotionModalWindow.classList.contains('hidden')) {
+    promotionModalWindow.classList.remove('hidden');
+  }
+  if (modalWindowOverlay.classList.contains('hidden')) {
+    modalWindowOverlay.classList.remove('hidden');
+  }
+};
+
+const hidePawnPromotionModalWindow = function () {};
 
 const calcMovesAll = function () {
   let piece;
@@ -947,6 +970,18 @@ const turnEnd = function () {
   turnBegin();
 };
 
+//EVENT_LISTENER
+const promoteToRook = function () {};
+
+//EVENT_LISTENER
+const promoteToKnight = function () {};
+
+//EVENT_LISTENER
+const promoteToBishop = function () {};
+
+//EVENT_LISTENER
+const promoteToQueen = function () {};
+
 const ROWS = 8;
 const COLUMNS = 8;
 const startingAlivePieces = 32;
@@ -970,7 +1005,10 @@ const pawnPossibleMoves = [
 ];
 let alivePieces = 32;
 let activePlayer = 'white';
-
+const promotionModalWindow = document.querySelector('.modal--promotion');
+const modalWindowOverlay = document.querySelector('.modal--overlay');
+console.log(promotionModalWindow);
+console.log(modalWindowOverlay);
 ///SPECIAL TEST CONDITIONS///
 
 for (let i = 0; i < 16; i++) {
