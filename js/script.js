@@ -240,7 +240,6 @@ const subscribeEventListeners = function () {
   }
 };
 
-// DONE
 const renderAllPieces = function () {
   let cleanupInfo = [];
   let drawInfo = getPiecesDrawInfo(cleanupInfo);
@@ -296,12 +295,11 @@ const cleanup = function (cleanupInfo) {
   }
 };
 
-//EVENT_HANDLER
+//EVENT_LISTENER
 const boardSquareClicked = function (e) {
   // this refers to the board-square element that fired the 'click event'
   //a two element array with the coordinates of the clicked board squares
   const clickedSquare = findCoordinates(this);
-
   //TODO
   gameLogic(clickedSquare);
 };
@@ -321,7 +319,7 @@ const gameLogic = function (clickedSquare) {
 const testForPiece = function (clickedSquare) {
   const clickedPiece = getPieceAtSquare(clickedSquare);
   if (clickedPiece) testForActivePlayer(clickedPiece);
-  else testForSelectedPiece();
+  else testForSelectedPiece(clickedSquare);
 };
 
 const getPieceAtSquare = function (clickedSquare) {
@@ -342,17 +340,27 @@ const testForActivePlayer = function (clickedPiece) {
 
 const selectPiece = function (clickedPiece) {
   setSelected(clickedPiece);
+  deselectOtherPieces(clickedPiece);
   renderAvailableMoves(clickedPiece.moves);
 };
 
 const setSelected = function (clickedPiece) {
   clickedPiece.selected = true;
 };
+
+const deselectOtherPieces = function (clickedPiece) {
+  let otherPiece;
+  for (let p = 0; p < pieces.length; p++) {
+    otherPiece = pieces[p];
+    if (otherPiece.color === activePlayer && otherPiece !== clickedPiece)
+      otherPiece.selected = false;
+  }
+};
+
 const renderAvailableMoves = function (moves) {
-  //TODO
   let cleanupInfo = [];
   const drawInfo = getAvailableMovesDrawInfo(moves, cleanupInfo);
-  drawBackground(drawInfo); //DONE I have to actually implement this. This should change the boardSquare background img, not the foreground img
+  drawBackground(drawInfo);
   cleanupBackground(cleanupInfo);
 };
 
@@ -416,6 +424,111 @@ const cleanupBackground = function (cleanupInfo) {
       squareBoardBackground.classList.toggle('available-move');
     if (squareBoardBackground.classList.contains('aggressive-move'))
       squareBoardBackground.classList.toggle('aggressive-move');
+  }
+};
+
+const testForSelectedPiece = function (clickedSquare) {
+  for (let p = 0; p < pieces.length; p++) {
+    if (pieces[p].alive && pieces[p].selected)
+      testForAvailableMove(pieces[p], clickedSquare);
+  }
+  //If there's no piece selected, do nothing
+};
+
+const testForAvailableMove = function (piece, clickedSquare) {
+  const pieceMoves = piece.moves;
+  let moveFound = false;
+  for (let m = 0; m < pieceMoves.length; m++) {
+    if (
+      pieceMoves[m][0] === clickedSquare[0] &&
+      pieceMoves[m][1] === clickedSquare[1]
+    ) {
+      moveFound = true;
+      break;
+    }
+  }
+  if (moveFound) movePiece(piece, clickedSquare);
+  else deselectPiece(piece);
+};
+
+const movePiece = function (piece, clickedSquare) {
+  testForRivalPiece(clickedSquare); //FIX for some reason aggressive moves do not remove the respective rival piece
+  //do piece movement
+  piece.y = clickedSquare[0];
+  piece.x = clickedSquare[1];
+  renderAllPieces();
+  hideAvailableMoves(piece.moves);
+  testForPawnMove(piece);
+  turnEnd();
+};
+
+const hideAvailableMoves = function (moves) {
+  cleanupBackground(moves);
+};
+
+const deselectPiece = function (piece) {
+  piece.selected = false;
+  hideAvailableMoves(piece.moves);
+};
+
+const deselectAllPieces = function () {
+  for (let p = 0; p < pieces.length; p++) {
+    if (pieces[p].selected) pieces[p].selected = false;
+  }
+};
+
+const testForRivalPiece = function (clickedSquare) {
+  //if there is a rival piece at the movment destination, remove it
+  console.log(clickedSquare);
+  const pieceToRemove = getPieceAtSquare(clickedSquare);
+  console.log(`piece to remove ${pieceToRemove}`);
+  if (pieceToRemove !== null) removePiece(pieceToRemove);
+  //else just return
+};
+
+const removePiece = function (piece) {
+  console.log(`removing ${piece.type}`);
+  piece.alive = false;
+};
+
+const testForPawnMove = function (piece) {
+  if (piece.type === 'pawn') testForPawnExchange(piece);
+};
+
+const testForPawnExchange = function (piece) {
+  if (piece.color === 'white' && piece.y === 0) exchangePawn(piece);
+  else if (piece.color === 'black' && piece.y === 7) exchangePawn(piece);
+  //else just return
+};
+
+const exchangePawn = function (pawn) {
+  //Make a modal-window visible so the active player can select a piece to exchange for his pawn
+};
+
+const calcMovesAll = function () {
+  let piece;
+
+  for (let p = 0; p < pieces.length; p++) {
+    piece = pieces[p];
+    switch (piece.type) {
+      case 'rook':
+        piece.moves = calcRookMoves(piece);
+        break;
+      case 'knight':
+        piece.moves = calcKnightMoves(piece);
+        break;
+      case 'bishop':
+        piece.moves = calcBishopMoves(piece);
+        break;
+      case 'queen':
+        piece.moves = calcQueenMoves(piece);
+        break;
+      case 'king':
+        piece.moves = calcKingMoves(piece);
+        break;
+      case 'pawn':
+        piece.moves = calcPawnMoves(piece);
+    }
   }
 };
 
@@ -491,7 +604,6 @@ const testForPossibleMove = function (
   pieceMoves,
   flag
 ) {
-  //FIXME gotta implement this in a better way. checking if the piece at possible move square is alive
   const pieceAtSquare = getPieceAtSquare(possibleMove);
   if (!pieceAtSquare) {
     pieceMoves.push([possibleMove[0], possibleMove[1], 'movement']);
@@ -642,7 +754,7 @@ const calcQueenMoves = function (piece) {
 };
 
 const calcPawnMoves = function (piece) {
-  //TODO
+  //TODO Refactor this. its so ugly
   const color = piece.color;
   const moves = [];
 
@@ -752,6 +864,56 @@ const movesBlackPawn = function (piece, moves) {
   }
 };
 
+const calcKingMoves = function (piece) {
+  const y = piece.y;
+  const x = piece.x;
+  const moves = [];
+  for (let direction = 0; direction < 8; direction++) {
+    switch (direction) {
+      case 0:
+        if (y - 1 >= 0)
+          testForPossibleMove([y - 1, x], piece.color, moves, null);
+        break;
+      case 1:
+        if (y - 1 >= 0 && x + 1 < COLUMNS)
+          testForPossibleMove([y - 1, x + 1], piece.color, moves, null);
+        break;
+      case 2:
+        if (x + 1 < COLUMNS)
+          testForPossibleMove([y, x + 1], piece.color, moves, null);
+        break;
+      case 3:
+        if (y + 1 < ROWS && x + 1 < COLUMNS)
+          testForPossibleMove([y + 1, x + 1], piece.color, moves, null);
+        break;
+      case 4:
+        if (y + 1 < ROWS)
+          testForPossibleMove([y + 1, x], piece.color, moves, null);
+        break;
+      case 5:
+        if (y + 1 < ROWS && x - 1 >= 0)
+          testForPossibleMove([y + 1, x - 1], piece.color, moves, null);
+        break;
+      case 6:
+        if (x - 1 >= 0)
+          testForPossibleMove([y, x - 1], piece.color, moves, null);
+        break;
+      case 7:
+        if (y - 1 >= 0 && x - 1 >= 0)
+          testForPossibleMove([y - 1, x - 1], piece.color, moves, null);
+        break;
+    }
+  }
+  return moves;
+};
+
+//TODO
+const resetMovesAll = function () {
+  for (let p = 0; p < pieces.length; p++) {
+    pieces[p].moves = [];
+  }
+};
+
 const testForAggressiveMove = function (
   possibleMove,
   friendlyColor,
@@ -765,11 +927,17 @@ const testForAggressiveMove = function (
       if (flag !== null) flag[0] = true;
     }
 };
-const testForSelectedPiece = function () {
-  testForAvailableMove();
+
+const turnBegin = function () {
+  resetMovesAll();
+  calcMovesAll();
 };
 
-const testForAvailableMove = function () {};
+const turnEnd = function () {
+  deselectAllPieces();
+  activePlayer = activePlayer === 'white' ? 'black' : 'white';
+  turnBegin();
+};
 
 const ROWS = 8;
 const COLUMNS = 8;
@@ -793,19 +961,9 @@ const pawnPossibleMoves = [
   [2, 0],
 ];
 let alivePieces = 32;
-let activePlayer = 'black';
+let activePlayer = 'white';
 
 subscribeEventListeners();
 renderAllPieces();
-pieces[31].y = 2;
-pieces[31].x = 4;
-pieces[30].y = 2;
-pieces[30].x = 5;
-pieces[29].y = 2;
-pieces[29].x = 6;
-pieces[15].moves = calcPawnMoves(pieces[15]);
-pieces[14].moves = calcPawnMoves(pieces[14]);
-pieces[13].moves = calcPawnMoves(pieces[13]);
-pieces[12].moves = calcPawnMoves(pieces[12]);
-pieces[11].moves = calcPawnMoves(pieces[11]);
-renderAllPieces();
+
+turnBegin();
