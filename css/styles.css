@@ -14,12 +14,12 @@ main {
 
 img {
   /* prevent dragging of ghost image */
-  pointer-events: none;
+  /* pointer-events: none; */
   /* prevent highlighting of images */
-  -webkit-user-drag: none;
+  /* -webkit-user-drag: none;
   -khtml-user-drag: none;
   -moz-user-drag: none;
-  -o-user-drag: none;
+  -o-user-drag: none; */
   /* user-drag: none; */
   width: inherit;
   height: inherit;
@@ -63,4 +63,64 @@ img {
 
 .piece {
   display: inline;
+}
+
+.hidden {
+  display: none;
+}
+.modal--promotion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 5px;
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.modal--overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 5;
+}
+
+.modal--promotion h2 {
+  width: 80%;
+  margin: 0px auto;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  word-spacing: 2px;
+  font-weight: 700;
+  color: #000;
+}
+
+.modal--image-container {
+  width: 80%;
+  margin: 0px auto;
+}
+
+.modal--images {
+  display: inline;
+  height: 80px;
+  width: 80px;
+  margin: 0px 10px;
+}
+
+.modal--images:hover {
+  transform: scale(1.1);
+}
+
+.modal--images:active {
+  transform: scale(0.9);
 }

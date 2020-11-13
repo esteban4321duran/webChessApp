@@ -318,8 +318,13 @@ const gameLogic = function (clickedSquare) {
 
 const testForPiece = function (clickedSquare) {
   const clickedPiece = getPieceAtSquare(clickedSquare);
-  if (clickedPiece) testForActivePlayer(clickedPiece);
-  else testForSelectedPiece(clickedSquare);
+  let belongsToActivePlayer = true;
+  if (clickedPiece !== null)
+    console.log(`${clickedPiece.color} ${clickedPiece.type}`);
+  if (clickedPiece !== null)
+    belongsToActivePlayer = testForActivePlayer(clickedPiece);
+  else testForSelectedPieceMove(clickedSquare);
+  if (!belongsToActivePlayer) testForSelectedPieceMove(clickedSquare);
 };
 
 const getPieceAtSquare = function (clickedSquare) {
@@ -335,7 +340,10 @@ const getPieceAtSquare = function (clickedSquare) {
 };
 
 const testForActivePlayer = function (clickedPiece) {
-  if (clickedPiece.color === activePlayer) selectPiece(clickedPiece);
+  if (clickedPiece.color === activePlayer) {
+    selectPiece(clickedPiece);
+    return true;
+  } else return false;
 };
 
 const selectPiece = function (clickedPiece) {
@@ -427,10 +435,11 @@ const cleanupBackground = function (cleanupInfo) {
   }
 };
 
-const testForSelectedPiece = function (clickedSquare) {
+const testForSelectedPieceMove = function (clickedSquare) {
   for (let p = 0; p < pieces.length; p++) {
-    if (pieces[p].alive && pieces[p].selected)
+    if (pieces[p].alive && pieces[p].selected) {
       testForAvailableMove(pieces[p], clickedSquare);
+    }
   }
   //If there's no piece selected, do nothing
 };
@@ -444,6 +453,7 @@ const testForAvailableMove = function (piece, clickedSquare) {
       pieceMoves[m][1] === clickedSquare[1]
     ) {
       moveFound = true;
+
       break;
     }
   }
@@ -452,7 +462,7 @@ const testForAvailableMove = function (piece, clickedSquare) {
 };
 
 const movePiece = function (piece, clickedSquare) {
-  testForRivalPiece(clickedSquare); //FIX for some reason aggressive moves do not remove the respective rival piece
+  testForRivalPiece(clickedSquare);
   //do piece movement
   piece.y = clickedSquare[0];
   piece.x = clickedSquare[1];
@@ -479,15 +489,12 @@ const deselectAllPieces = function () {
 
 const testForRivalPiece = function (clickedSquare) {
   //if there is a rival piece at the movment destination, remove it
-  console.log(clickedSquare);
   const pieceToRemove = getPieceAtSquare(clickedSquare);
-  console.log(`piece to remove ${pieceToRemove}`);
   if (pieceToRemove !== null) removePiece(pieceToRemove);
   //else just return
 };
 
 const removePiece = function (piece) {
-  console.log(`removing ${piece.type}`);
   piece.alive = false;
 };
 
@@ -496,6 +503,7 @@ const testForPawnMove = function (piece) {
 };
 
 const testForPawnExchange = function (piece) {
+  console.log(`was a pawn`);
   if (piece.color === 'white' && piece.y === 0) exchangePawn(piece);
   else if (piece.color === 'black' && piece.y === 7) exchangePawn(piece);
   //else just return
@@ -962,6 +970,17 @@ const pawnPossibleMoves = [
 ];
 let alivePieces = 32;
 let activePlayer = 'white';
+
+///SPECIAL TEST CONDITIONS///
+
+for (let i = 0; i < 16; i++) {
+  pieces[i].alive = false;
+}
+for (let i = 16; i < 24; i++) {
+  pieces[i].y = 1;
+}
+
+/////////////////////////////
 
 subscribeEventListeners();
 renderAllPieces();
