@@ -219,34 +219,67 @@
         </section>
       </section>
     </main>
-    <div class="modal--overlay hidden"></div>
+    <div class="player1">
+      <p class="active-player-label hidden">Your Turn</p>
+      <h2 id="player1Name">Player 1</h2>
+      <img src="" alt="" class="hidden" id="p1Piece0" />
+      <img src="" alt="" class="hidden" id="p1Piece1" />
+      <img src="" alt="" class="hidden" id="p1Piece2" />
+      <img src="" alt="" class="hidden" id="p1Piece3" />
+      <img src="" alt="" class="hidden" id="p1Piece4" />
+      <img src="" alt="" class="hidden" id="p1Piece5" />
+      <img src="" alt="" class="hidden" id="p1Piece6" />
+      <img src="" alt="" class="hidden" id="p1Piece7" />
+      <img src="" alt="" class="hidden" id="p1Piece8" />
+      <img src="" alt="" class="hidden" id="p1Piece9" />
+      <img src="" alt="" class="hidden" id="p1Piece10" />
+      <img src="" alt="" class="hidden" id="p1Piece11" />
+      <img src="" alt="" class="hidden" id="p1Piece12" />
+      <img src="" alt="" class="hidden" id="p1Piece13" />
+      <img src="" alt="" class="hidden" id="p1Piece14" />
+      <img src="" alt="" class="hidden" id="p1Piece15" />
+    </div>
+    <div class="player2">
+      <p class="active-player-label hidden">Your Turn</p>
+      <h2 id="player2Name">Player 2</h2>
+      <img src="" alt="" class="hidden" id="p2Piece0" />
+      <img src="" alt="" class="hidden" id="p2Piece1" />
+      <img src="" alt="" class="hidden" id="p2Piece2" />
+      <img src="" alt="" class="hidden" id="p2Piece3" />
+      <img src="" alt="" class="hidden" id="p2Piece4" />
+      <img src="" alt="" class="hidden" id="p2Piece5" />
+      <img src="" alt="" class="hidden" id="p2Piece6" />
+      <img src="" alt="" class="hidden" id="p2Piece7" />
+      <img src="" alt="" class="hidden" id="p2Piece8" />
+      <img src="" alt="" class="hidden" id="p2Piece9" />
+      <img src="" alt="" class="hidden" id="p2Piece10" />
+      <img src="" alt="" class="hidden" id="p2Piece11" />
+      <img src="" alt="" class="hidden" id="p2Piece12" />
+      <img src="" alt="" class="hidden" id="p2Piece13" />
+      <img src="" alt="" class="hidden" id="p2Piece14" />
+      <img src="" alt="" class="hidden" id="p2Piece15" />
+    </div>
+    <div class="modal--player-creation">
+      <h2>Choose your name</h2>
+      <div>
+        <p>Black Player</p>
+        <input type="text" id="inputPlayer2Name" />
+      </div>
+      <div>
+        <p>White Player</p>
+        <input type="text" id="inputPlayer1Name" />
+      </div>
+
+      <button id="start">Start</button>
+    </div>
+    <div class="modal--overlay"></div>
     <div class="modal--promotion hidden">
       <h2>Promote your pawn to:</h2>
       <div class="modal--image-container">
-        <img
-          src="assets/pieces/w_rook_svg_withShadow.svg"
-          alt=""
-          class="modal--images"
-          id="promoteToRook"
-        />
-        <img
-          src="assets/pieces/w_knight_svg_withShadow.svg"
-          alt=""
-          class="modal--images"
-          id="promoteToKnight"
-        />
-        <img
-          src="assets/pieces/w_bishop_svg_withShadow.svg"
-          alt=""
-          class="modal--images"
-          id="promoteToBishop"
-        />
-        <img
-          src="assets/pieces/w_queen_svg_withShadow.svg"
-          alt=""
-          class="modal--images"
-          id="promoteToQueen"
-        />
+        <img src="" alt="" class="modal--images" id="promoteToRook" />
+        <img src="" alt="" class="modal--images" id="promoteToKnight" />
+        <img src="" alt="" class="modal--images" id="promoteToBishop" />
+        <img src="" alt="" class="modal--images" id="promoteToQueen" />
       </div>
     </div>
     <script src="js/script.js"></script>

@@ -1,28 +1,34 @@
-* {
-  box-sizing: border-box;
+body {
+  background: rgb(0, 0, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.8259860788863109) 0%,
+    rgba(255, 255, 255, 0.8445475638051044) 100%
+  );
 }
-
 main {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #dddddd;
+  background-color: snow;
   height: 500px;
   width: 500px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.9);
 }
 
 img {
   /* prevent dragging of ghost image */
-  pointer-events: none;
+  pointer-events: auto;
   /* prevent highlighting of images */
   /* /* -webkit-user-drag: none; */
   -khtml-user-drag: none;
   -moz-user-drag: none;
   -o-user-drag: none;
   /* user-drag: none; */
-  width: inherit;
-  height: inherit;
+  width: 62.5px;
+  height: 62.5px;
 }
 
 .board-square {
@@ -65,7 +71,7 @@ img {
   display: inline;
 }
 
-.modal--promotion {
+.modal--player-creation {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -78,7 +84,56 @@ img {
   box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
+.modal--player-creation h2 {
+  font-size: 200%;
+  display: block;
+  text-align: center;
+}
+.modal--player-creation div {
+  float: left;
+  width: 50%;
+}
+.modal--player-creation div p {
+  width: 150px;
+  text-align: center;
+  margin: 0px auto;
+}
+.modal--player-creation div input {
+  display: block;
+  height: 20px;
+  width: 150px;
+  text-align: center;
+  margin: 0px auto;
+}
+.modal--player-creation button {
+  display: block;
+  width: 100px;
+  padding: 10px 0px;
+  margin: 75px auto 0px auto;
+}
 
+.modal--promotion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 100px;
+
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 5px;
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+.white {
+  color: #000;
+  background-color: #fff;
+}
+.black {
+  color: #fff;
+  background-color: #000;
+}
 .modal--overlay {
   position: absolute;
   top: 0;
@@ -99,12 +154,15 @@ img {
   letter-spacing: 1px;
   word-spacing: 2px;
   font-weight: 700;
-  color: #000;
+  color: inherit;
 }
 
 .modal--image-container {
-  width: 80%;
-  margin: 0px auto;
+  position: absolute;
+  transform: translate(-42%, 0);
+  width: 500px;
+  height: 100px;
+  left: 50%;
 }
 
 .modal--images {
@@ -124,4 +182,40 @@ img {
 
 .hidden {
   display: none;
+}
+
+.player1 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: center;
+  padding: 10px;
+  color: #000;
+
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  max-width: 150px;
+}
+
+.player2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+  padding: 10px;
+  color: #fff;
+  background-color: #000;
+  border: 1px solid #000;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  max-width: 150px;
+}
+
+.active-player-label {
+  color: #888;
+  text-align: center;
+  font-size: 133%;
+  font-weight: bold;
 }

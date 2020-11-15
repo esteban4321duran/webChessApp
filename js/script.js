@@ -1,5 +1,11 @@
 'use strict';
 
+//TODO refactor:
+//implement 'check' & 'checkmate'
+// implement that weird move where the king and the tower exchange their position
+// refactor using variables for sprite locations
+// implement an aside list that shows which pieces are taken for each player
+
 const initializeBoard = function () {
   const boardSquares = document.querySelectorAll('.board-square');
   const board = buildBoard(boardSquares);
@@ -43,7 +49,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_rook_svg_withShadow.svg',
+    sprite: sprBlackRook,
   });
   pieces.push({
     x: 1,
@@ -53,7 +59,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_knight_svg_withShadow.svg',
+    sprite: sprBlackKnight,
   });
   pieces.push({
     x: 2,
@@ -63,7 +69,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_bishop_svg_withShadow.svg',
+    sprite: sprBlackBishop,
   });
   pieces.push({
     x: 3,
@@ -73,7 +79,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_queen_svg_withShadow.svg',
+    sprite: sprBlackQueen,
   });
   pieces.push({
     x: 4,
@@ -83,7 +89,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_king_svg_withShadow.svg',
+    sprite: sprBlackKing,
   });
   pieces.push({
     x: 5,
@@ -93,7 +99,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_bishop_svg_withShadow.svg',
+    sprite: sprBlackBishop,
   });
   pieces.push({
     x: 6,
@@ -103,7 +109,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_knight_svg_withShadow.svg',
+    sprite: sprBlackKnight,
   });
   pieces.push({
     x: 7,
@@ -113,7 +119,7 @@ const buildBlackPieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/b_rook_svg_withShadow.svg',
+    sprite: sprBlackRook,
   });
 
   for (let i = 0; i < COLUMNS; i++) {
@@ -126,7 +132,7 @@ const buildBlackPieces = function (pieces) {
       selected: false,
       moves: [],
       firstMove: true,
-      sprite: '../assets/pieces/b_pawn_svg_withShadow.svg',
+      sprite: sprBlackPawn,
     });
   }
 };
@@ -142,7 +148,7 @@ const buildWhitePieces = function (pieces) {
       selected: false,
       moves: [],
       firstMove: true,
-      sprite: '../assets/pieces/w_pawn_svg_withShadow.svg',
+      sprite: sprWhitePawn,
     });
   }
   pieces.push({
@@ -153,7 +159,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_rook_svg_withShadow.svg',
+    sprite: sprWhiteRook,
   });
   pieces.push({
     x: 1,
@@ -163,7 +169,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_knight_svg_withShadow.svg',
+    sprite: sprWhiteKnight,
   });
   pieces.push({
     x: 2,
@@ -173,7 +179,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_bishop_svg_withShadow.svg',
+    sprite: sprWhiteBishop,
   });
   pieces.push({
     x: 3,
@@ -183,7 +189,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_queen_svg_withShadow.svg',
+    sprite: sprWhiteQueen,
   });
   pieces.push({
     x: 4,
@@ -193,7 +199,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_king_svg_withShadow.svg',
+    sprite: sprWhiteKing,
   });
   pieces.push({
     x: 5,
@@ -203,7 +209,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_bishop_svg_withShadow.svg',
+    sprite: sprWhiteBishop,
   });
   pieces.push({
     x: 6,
@@ -213,7 +219,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_knight_svg_withShadow.svg',
+    sprite: sprWhiteKnight,
   });
   pieces.push({
     x: 7,
@@ -223,7 +229,7 @@ const buildWhitePieces = function (pieces) {
     alive: true,
     selected: false,
     moves: [],
-    sprite: '../assets/pieces/w_rook_svg_withShadow.svg',
+    sprite: sprWhiteRook,
   });
 };
 
@@ -238,18 +244,12 @@ const subscribeEventListeners = function () {
       board[i][j].addEventListener('click', boardSquareClicked);
     }
   }
-  document
-    .getElementById('promoteToRook')
-    .addEventListener('click', promoteToRook);
-  document
-    .getElementById('promoteToKnight')
-    .addEventListener('click', promoteToKnight);
-  document
-    .getElementById('promoteToBishop')
-    .addEventListener('click', promoteToBishop);
-  document
-    .getElementById('promoteToQueen')
-    .addEventListener('click', promoteToQueen);
+  //Modal windows
+  btnStart.addEventListener('click', startGame);
+  btnPromoteToRook.addEventListener('click', promoteToRook);
+  btnPromoteToKnight.addEventListener('click', promoteToKnight);
+  btnPromoteToBishop.addEventListener('click', promoteToBishop);
+  btnPromoteToQueen.addEventListener('click', promoteToQueen);
 };
 
 const renderAllPieces = function () {
@@ -304,6 +304,34 @@ const cleanup = function (cleanupInfo) {
     squareBoardImg.src = '';
     if (!squareBoardImg.classList.contains('none'))
       squareBoardImg.classList.add('none');
+  }
+};
+
+//EVENT_LISTENER
+const startGame = function () {
+  setPlayerNames();
+  hidePlayerCreationModalWindow();
+};
+
+const setPlayerNames = function () {
+  player1Name =
+    inputPlayer1Name.value !== '' ? inputPlayer1Name.value : 'Player 1';
+  player2Name =
+    inputPlayer2Name.value !== '' ? inputPlayer2Name.value : 'Player 2';
+  showPlayerNames();
+};
+
+const showPlayerNames = function () {
+  player1NameLabel.textContent = player1Name;
+  player2NameLabel.textContent = player2Name;
+};
+
+const hidePlayerCreationModalWindow = function () {
+  if (!playerCreationModalWindow.classList.contains('hidden')) {
+    playerCreationModalWindow.classList.add('hidden');
+  }
+  if (!modalWindowOverlay.classList.contains('hidden')) {
+    modalWindowOverlay.classList.add('hidden');
   }
 };
 
@@ -511,7 +539,10 @@ const removePiece = function (piece) {
 };
 
 const testForPawnMove = function (piece) {
-  if (piece.type === 'pawn') testForPawnPromotion(piece);
+  if (piece.type === 'pawn') {
+    if (piece.firstMove) piece.firstMove = !piece.firstMove;
+    testForPawnPromotion(piece);
+  }
 };
 
 const testForPawnPromotion = function (piece) {
@@ -522,10 +553,13 @@ const testForPawnPromotion = function (piece) {
 
 const promotePawn = function (pawn) {
   //Make a modal-window visible so the active player can select a piece to exchange for his pawn
-  showPawnPromotionModalWindow();
+  pawnToPromote = pawn;
+  showPawnPromotionModalWindow(pawn.color);
 };
 
-const showPawnPromotionModalWindow = function () {
+const showPawnPromotionModalWindow = function (color) {
+  setModalWindowColors(color);
+  setModalWindowButtonSprites(color);
   if (promotionModalWindow.classList.contains('hidden')) {
     promotionModalWindow.classList.remove('hidden');
   }
@@ -534,7 +568,40 @@ const showPawnPromotionModalWindow = function () {
   }
 };
 
-const hidePawnPromotionModalWindow = function () {};
+const setModalWindowColors = function (color) {
+  if (color === 'white') {
+    if (!promotionModalWindow.classList.contains('white'))
+      promotionModalWindow.classList.add('white');
+    promotionModalWindow.classList.remove('black');
+  } else {
+    if (!promotionModalWindow.classList.contains('black'))
+      promotionModalWindow.classList.add('black');
+    promotionModalWindow.classList.remove('white');
+  }
+};
+
+const setModalWindowButtonSprites = function (color) {
+  if (color === 'white') {
+    btnPromoteToRook.src = '../assets/pieces/w_rook_svg_withShadow.svg';
+    btnPromoteToKnight.src = '../assets/pieces/w_knight_svg_withShadow.svg';
+    btnPromoteToBishop.src = '../assets/pieces/w_bishop_svg_withShadow.svg';
+    btnPromoteToQueen.src = '../assets/pieces/w_queen_svg_withShadow.svg';
+  } else {
+    btnPromoteToRook.src = '../assets/pieces/b_rook_svg_withShadow.svg';
+    btnPromoteToKnight.src = '../assets/pieces/b_knight_svg_withShadow.svg';
+    btnPromoteToBishop.src = '../assets/pieces/b_bishop_svg_withShadow.svg';
+    btnPromoteToQueen.src = '../assets/pieces/b_queen_svg_withShadow.svg';
+  }
+};
+
+const hidePawnPromotionModalWindow = function () {
+  if (!promotionModalWindow.classList.contains('hidden')) {
+    promotionModalWindow.classList.add('hidden');
+  }
+  if (!modalWindowOverlay.classList.contains('hidden')) {
+    modalWindowOverlay.classList.add('hidden');
+  }
+};
 
 const calcMovesAll = function () {
   let piece;
@@ -732,7 +799,7 @@ const movesSouthwest = function (piece, moves) {
   while (!changeDirection[0]) {
     y++;
     x--;
-    if (y < ROWS && x > 0)
+    if (y < ROWS && x >= 0)
       testForPossibleMove([y, x], color, moves, changeDirection);
     else changeDirection[0] = true;
   }
@@ -745,7 +812,7 @@ const movesNorthwest = function (piece, moves) {
   while (!changeDirection[0]) {
     y--;
     x--;
-    if (y > 0 && x > 0)
+    if (y >= 0 && x >= 0)
       testForPossibleMove([y, x], color, moves, changeDirection);
     else changeDirection[0] = true;
   }
@@ -836,7 +903,6 @@ const movesWhitePawn = function (piece, moves) {
               x + pawnPossibleMoves[m][1],
               'movement',
             ]);
-            piece.firstMove = !piece.firstMove;
           }
         }
         break;
@@ -887,7 +953,6 @@ const movesBlackPawn = function (piece, moves) {
               x + pawnPossibleMoves[m][1],
               'movement',
             ]);
-            piece.firstMove = !piece.firstMove;
           }
         }
         break;
@@ -938,7 +1003,6 @@ const calcKingMoves = function (piece) {
   return moves;
 };
 
-//TODO
 const resetMovesAll = function () {
   for (let p = 0; p < pieces.length; p++) {
     pieces[p].moves = [];
@@ -962,6 +1026,7 @@ const testForAggressiveMove = function (
 const turnBegin = function () {
   resetMovesAll();
   calcMovesAll();
+  toggleActivePlayerLabel();
 };
 
 const turnEnd = function () {
@@ -970,18 +1035,77 @@ const turnEnd = function () {
   turnBegin();
 };
 
-//EVENT_LISTENER
-const promoteToRook = function () {};
+const toggleActivePlayerLabel = function () {
+  if (activePlayer === 'white') {
+    if (activePlayerLabel1.classList.contains('hidden'))
+      activePlayerLabel1.classList.remove('hidden');
+    activePlayerLabel2.classList.add('hidden');
+  } else {
+    if (activePlayerLabel2.classList.contains('hidden'))
+      activePlayerLabel2.classList.remove('hidden');
+    activePlayerLabel1.classList.add('hidden');
+  }
+};
 
 //EVENT_LISTENER
-const promoteToKnight = function () {};
+const promoteToRook = function () {
+  hidePawnPromotionModalWindow();
+  pawnToPromote.type = 'rook';
+  pawnToPromote.sprite =
+    pawnToPromote.color === 'white'
+      ? '../assets/pieces/w_rook_svg_withShadow.svg'
+      : '../assets/pieces/b_rook_svg_withShadow.svg';
+  renderAllPieces();
+};
 
 //EVENT_LISTENER
-const promoteToBishop = function () {};
+const promoteToKnight = function () {
+  hidePawnPromotionModalWindow();
+  pawnToPromote.type = 'knight';
+  pawnToPromote.sprite =
+    pawnToPromote.color === 'white'
+      ? '../assets/pieces/w_knight_svg_withShadow.svg'
+      : '../assets/pieces/b_knight_svg_withShadow.svg';
+  renderAllPieces();
+};
 
 //EVENT_LISTENER
-const promoteToQueen = function () {};
+const promoteToBishop = function () {
+  hidePawnPromotionModalWindow();
+  pawnToPromote.type = 'bishop';
+  pawnToPromote.sprite =
+    pawnToPromote.color === 'white'
+      ? '../assets/pieces/w_bishop_svg_withShadow.svg'
+      : '../assets/pieces/b_bishop_svg_withShadow.svg';
+  renderAllPieces();
+};
 
+//EVENT_LISTENER
+const promoteToQueen = function () {
+  hidePawnPromotionModalWindow();
+  pawnToPromote.type = 'queen';
+  pawnToPromote.sprite =
+    pawnToPromote.color === 'white'
+      ? '../assets/pieces/w_queen_svg_withShadow.svg'
+      : '../assets/pieces/b_queen_svg_withShadow.svg';
+  renderAllPieces();
+};
+
+//sprites
+const sprBlackRook = '../assets/pieces/b_rook_svg_withShadow.svg';
+const sprBlackKnight = '../assets/pieces/b_knight_svg_withShadow.svg';
+const sprBlackBishop = '../assets/pieces/b_bishop_svg_withShadow.svg';
+const sprBlackQueen = '../assets/pieces/b_queen_svg_withShadow.svg';
+const sprBlackKing = '../assets/pieces/b_king_svg_withShadow.svg';
+const sprBlackPawn = '../assets/pieces/b_pawn_svg_withShadow.svg';
+const sprWhiteRook = '../assets/pieces/w_rook_svg_withShadow.svg';
+const sprWhiteKnight = '../assets/pieces/w_knight_svg_withShadow.svg';
+const sprWhiteBishop = '../assets/pieces/w_bishop_svg_withShadow.svg';
+const sprWhiteQueen = '../assets/pieces/w_queen_svg_withShadow.svg';
+const sprWhiteKing = '../assets/pieces/w_king_svg_withShadow.svg';
+const sprWhitePawn = '../assets/pieces/w_pawn_svg_withShadow.svg';
+
+//Game variables and constants
 const ROWS = 8;
 const COLUMNS = 8;
 const startingAlivePieces = 32;
@@ -1003,20 +1127,45 @@ const pawnPossibleMoves = [
   [1, -1],
   [2, 0],
 ];
+let pawnToPromote;
 let alivePieces = 32;
 let activePlayer = 'white';
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+//HTML elements
 const promotionModalWindow = document.querySelector('.modal--promotion');
 const modalWindowOverlay = document.querySelector('.modal--overlay');
-console.log(promotionModalWindow);
-console.log(modalWindowOverlay);
+const playerCreationModalWindow = document.querySelector(
+  '.modal--player-creation'
+);
+const inputPlayer1Name = document.getElementById('inputPlayer1Name');
+const inputPlayer2Name = document.getElementById('inputPlayer2Name');
+const btnStart = document.getElementById('start');
+const btnPromoteToRook = document.getElementById('promoteToRook');
+const btnPromoteToKnight = document.getElementById('promoteToKnight');
+const btnPromoteToBishop = document.getElementById('promoteToBishop');
+const btnPromoteToQueen = document.getElementById('promoteToQueen');
+const player1Container = document.querySelector('.player1');
+const player2Container = document.querySelector('.player2');
+const player1NameLabel = document.getElementById('player1Name');
+const player2NameLabel = document.getElementById('player2Name');
+const activePlayerLabel1 = player1Container.firstElementChild;
+const activePlayerLabel2 = player2Container.firstElementChild;
 ///SPECIAL TEST CONDITIONS///
 
-for (let i = 0; i < 16; i++) {
-  pieces[i].alive = false;
-}
-for (let i = 16; i < 24; i++) {
-  pieces[i].y = 1;
-}
+// for (let i = 0; i < 8; i++) {
+//   pieces[i].alive = false;
+// }
+// for (let i = 8; i < 16; i++) {
+//   pieces[i].y = 6;
+// }
+
+// for (let i = 16; i < 24; i++) {
+//   pieces[i].y = 1;
+// }
+// for (let i = 24; i < 32; i++) {
+//   pieces[i].alive = false;
+// }
 
 /////////////////////////////
 
